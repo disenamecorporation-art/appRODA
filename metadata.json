@@ -1,0 +1,6 @@
+{
+  "name": "RODA - Mantenimiento Vehicular",
+  "description": "Aplicación móvil para gestión de mantenimiento vehicular que conecta a dueños de vehículos con talleres mecánicos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
