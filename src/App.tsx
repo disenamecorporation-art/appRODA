@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Car,
-  Store,
-  Layers,
-  X,
-  RotateCcw
-} from 'lucide-react';
-import {
   UserRole,
   ScreenId,
   Vehicle,
@@ -29,7 +22,6 @@ import {
 // Common Components
 import { BottomNav } from './components/common/BottomNav';
 import { NotificationsModal } from './components/common/NotificationsModal';
-import { NativeAppModal } from './components/common/NativeAppModal';
 
 // Auth Screens
 import { SplashScreen } from './components/auth/SplashScreen';
@@ -63,8 +55,6 @@ export default function App() {
 
   // Presentation State
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [devToolsOpen, setDevToolsOpen] = useState(false);
-  const [nativeAppModalOpen, setNativeAppModalOpen] = useState(false);
 
   // App Data State
   const [vehicles, setVehicles] = useState<Vehicle[]>(MOCK_VEHICLES);
@@ -80,27 +70,6 @@ export default function App() {
   const [bookingWorkshop, setBookingWorkshop] = useState<Workshop>(MOCK_WORKSHOPS[0]);
   const [bookingDate, setBookingDate] = useState('17 Abr 2025');
   const [bookingTime, setBookingTime] = useState('10:00 AM');
-
-  // Screen directory for the subtle switcher
-  const screenList: { id: ScreenId; label: string; group: 'General' | 'Dueño' | 'Taller' }[] = [
-    { id: 'splash', label: '1. Splash Screen', group: 'General' },
-    { id: 'onboarding', label: '2. Onboarding', group: 'General' },
-    { id: 'login', label: '3. Iniciar Sesión', group: 'General' },
-    { id: 'register_profile', label: '4. Selección de Perfil', group: 'General' },
-    { id: 'owner_home', label: '5. Home Dueño', group: 'Dueño' },
-    { id: 'owner_maintenances', label: '6. Mantenimientos', group: 'Dueño' },
-    { id: 'owner_nearby_shops', label: '7. Talleres Cercanos (Mapa)', group: 'Dueño' },
-    { id: 'owner_shop_profile', label: '8. Perfil de Taller', group: 'Dueño' },
-    { id: 'owner_booking_step1', label: '9. Agendar - Paso 1', group: 'Dueño' },
-    { id: 'owner_booking_step2', label: '10. Agendar - Paso 2', group: 'Dueño' },
-    { id: 'owner_booking_confirm', label: '11. Cita Agendada (Éxito)', group: 'Dueño' },
-    { id: 'owner_vehicles', label: 'Garage de Vehículos', group: 'Dueño' },
-    { id: 'owner_profile', label: 'Mi Perfil (Dueño)', group: 'Dueño' },
-    { id: 'shop_home', label: '12. Home Taller', group: 'Taller' },
-    { id: 'shop_agenda', label: '13. Agenda del Taller', group: 'Taller' },
-    { id: 'shop_profile', label: '14. Mi Taller (Perfil negocio)', group: 'Taller' },
-    { id: 'shop_clients', label: 'Clientes del Taller', group: 'Taller' },
-  ];
 
   const handleLoginSuccess = (selectedRole: UserRole, name: string) => {
     setRole(selectedRole);
@@ -421,148 +390,6 @@ export default function App() {
         <div className="w-full bg-white pb-2 pt-0.5 flex justify-center shrink-0">
           <div className="w-32 h-1 bg-gray-300 rounded-full" />
         </div>
-
-        {/* 
-          Discreet Floating Quick-Switch Pill
-          (Tiny, non-intrusive floating button in top-right corner to jump between roles/screens instantly during review)
-        */}
-        <div className="absolute top-2 right-2 z-50">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setDevToolsOpen(!devToolsOpen)}
-            className="px-2 py-1 bg-black/60 backdrop-blur-md hover:bg-black/80 text-white rounded-full text-[10px] font-semibold flex items-center gap-1 shadow-md border border-white/20 transition-all opacity-70 hover:opacity-100"
-            title="Cambiar pantalla / rol"
-          >
-            <Layers className="w-3 h-3 text-[#F5821F]" />
-            <span className="capitalize">{role === 'owner' ? 'Dueño' : 'Taller'}</span>
-          </motion.button>
-        </div>
-
-        {/* Quick Navigation Drawer */}
-        <AnimatePresence>
-          {devToolsOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute inset-x-3 top-10 bg-slate-900/95 backdrop-blur-lg border border-slate-700 text-white rounded-2xl shadow-2xl p-4 z-50 max-h-[80vh] flex flex-col"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-slate-700">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-white">Navegación Rápida RODA</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5821F] text-white font-bold">
-                    14 Pantallas
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setDevToolsOpen(false)}
-                  className="w-6 h-6 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-gray-300"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Role Toggle */}
-              <div className="py-2.5 flex items-center justify-between border-b border-slate-800">
-                <span className="text-[11px] text-gray-300 font-semibold">Cambiar Rol Activo:</span>
-                <div className="flex items-center bg-slate-800 p-1 rounded-xl">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRole('owner');
-                      setCurrentScreen('owner_home');
-                      setDevToolsOpen(false);
-                    }}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      role === 'owner'
-                        ? 'bg-[#1B3A8C] text-white shadow-xs'
-                        : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    <Car className="w-3 h-3" /> Dueño
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRole('shop');
-                      setCurrentScreen('shop_home');
-                      setDevToolsOpen(false);
-                    }}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      role === 'shop'
-                        ? 'bg-[#F5821F] text-white shadow-xs'
-                        : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    <Store className="w-3 h-3" /> Taller
-                  </button>
-                </div>
-              </div>
-
-              {/* Screens Grid */}
-              <div className="flex-1 overflow-y-auto py-2 space-y-3">
-                {['General', 'Dueño', 'Taller'].map((grp) => (
-                  <div key={grp}>
-                    <div className="text-[10px] uppercase tracking-wider font-bold text-[#F5821F] mb-1.5">
-                      {grp}
-                    </div>
-                    <div className="grid grid-cols-1 gap-1">
-                      {screenList
-                        .filter((s) => s.group === grp)
-                        .map((s) => (
-                          <button
-                            key={s.id}
-                            type="button"
-                            onClick={() => {
-                              setCurrentScreen(s.id);
-                              if (s.group === 'Dueño') setRole('owner');
-                              if (s.group === 'Taller') setRole('shop');
-                              setDevToolsOpen(false);
-                            }}
-                            className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-colors flex items-center justify-between ${
-                              currentScreen === s.id
-                                ? 'bg-[#1B3A8C] text-white font-bold'
-                                : 'text-gray-300 hover:bg-slate-800'
-                            }`}
-                          >
-                            <span className="truncate">{s.label}</span>
-                            {currentScreen === s.id && (
-                              <span className="w-2 h-2 rounded-full bg-[#F5821F]" />
-                            )}
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDevToolsOpen(false);
-                    setNativeAppModalOpen(true);
-                  }}
-                  className="px-2.5 py-1 bg-[#F5821F] hover:bg-[#e07519] text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs"
-                >
-                  📲 Instalar en Celular / APK
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCurrentScreen('splash');
-                    setDevToolsOpen(false);
-                  }}
-                  className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1"
-                >
-                  <RotateCcw className="w-3 h-3" /> Reiniciar Splash
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
       </div>
 
       {/* Notifications Drawer */}
@@ -571,12 +398,6 @@ export default function App() {
         onClose={() => setNotificationsOpen(false)}
         notifications={notifications}
         onNavigate={(s) => setCurrentScreen(s)}
-      />
-
-      {/* Native App & APK Installation Guide Modal */}
-      <NativeAppModal
-        isOpen={nativeAppModalOpen}
-        onClose={() => setNativeAppModalOpen(false)}
       />
     </div>
   );

@@ -19,11 +19,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(() => {});
-        });
-      }
+      // Ensure window.fetch has both a getter and setter to prevent
+      // "Cannot set property fetch of #<Window> which has only a getter"
+      // when libraries or environment wrappers attempt to patch global fetch.
+      (function() {
+        try {
+          var _fetch = window.fetch;
+          var descriptor = {
+            get: function() { return _fetch; },
+            set: function(v) { _fetch = v; },
+            configurable: true,
+            enumerable: true
+          };
+          Object.defineProperty(window, 'fetch', descriptor);
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            Object.defineProperty(Window.prototype, 'fetch', descriptor);
+          }
+        } catch (e) {}
+
+        // Unregister any stale service workers
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) {
+              regs[i].unregister();
+            }
+          }).catch(function() {});
+        }
+      })();
     </script>
   </head>
   <body class="h-full w-full overflow-hidden bg-neutral-900 font-sans antialiased text-[#1A1A1A] select-none touch-manipulation m-0 p-0">
